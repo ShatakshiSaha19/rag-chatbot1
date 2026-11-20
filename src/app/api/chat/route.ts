@@ -9,60 +9,107 @@ import {
   type UIMessage,
 } from "ai";
 import { z } from "zod";
-import { searchDocuments } from "@/lib/search";
+import { getDocumentText, listDocuments, searchDocuments } from "@/lib/search";
 
 const tools = {
   searchKnowledgeBase: tool({
     description:
-      "Search the uploaded documents (PDFs) for information relevant to the user's question",
+      "Semantic search over the uploaded PDFs. Returns the most relevant excerpts, each labelled with its source file. Best for specific questions (facts, names, numbers, definitions).",
     inputSchema: z.object({
-      query: z.string().describe("The search query to find relevant documents"),
+      query: z
+        .string()
+        .describe(
+          "What to look for, phrased with the key terms likely to appear in the document",
+        ),
+      source: z
+        .string()
+        .optional()
+        .describe(
+          "Exact file name to search only within that document. Omit to search all documents.",
+        ),
     }),
-    execute: async ({ query }) => {
+    execute: async ({ query, source }) => {
       try {
-        // Search the vector database
-        const results = await searchDocuments(query, 6, 0.4);
+        const results = await searchDocuments(query, 8, 0.35, source);
 
         if (results.length === 0) {
-          return "No relevant information found in the knowledge base.";
+          return source
+            ? `No relevant excerpts found in "${source}".`
+            : "No relevant information found in the uploaded documents.";
         }
 
-        // Format results for the AI, labelling which PDF each excerpt came from
-        const formattedResults = results
+        return results
           .map(
             (r, i) =>
-              `[${i + 1}] (source: ${r.source ?? "unknown"})\n${r.content}`,
+              `[${i + 1}] (source: ${r.source ?? "older upload, unnamed"})\n${r.content}`,
           )
           .join("\n\n");
-
-        return formattedResults;
       } catch (error) {
         console.error("Search error:", error);
         return "Error searching the knowledge base.";
       }
     },
   }),
+
+  readDocument: tool({
+    description:
+      "Read the full text of one uploaded PDF (very long documents are cut off at a limit). Use for broad questions: summaries, overviews, 'what is this document about', or listing everything of some kind.",
+    inputSchema: z.object({
+      source: z.string().describe("Exact file name of the document to read"),
+    }),
+    execute: async ({ source }) => {
+      try {
+        const { text, chunks, truncated } = await getDocumentText(source);
+        if (chunks === 0) {
+          return `No document named "${source}" was found.`;
+        }
+        return truncated
+          ? `${text}\n\n[Document truncated: only the first part is shown. Use searchKnowledgeBase with source="${source}" for details from later sections.]`
+          : text;
+      } catch (error) {
+        console.error("Read document error:", error);
+        return "Error reading the document.";
+      }
+    },
+  }),
 };
+
+function buildSystemPrompt(docs: { source: string | null }[]) {
+  const docList =
+    docs.length > 0
+      ? docs.map((d, i) => `${i + 1}. ${d.source}`).join("\n")
+      : "(no named documents yet)";
+
+  return `You answer questions using PDFs that an admin uploaded to a shared knowledge base. The documents can be about any subject.
+
+Uploaded documents, newest first:
+${docList}
+
+How to answer:
+- Always use the tools before answering a question that could relate to the documents. Never answer document questions from memory.
+- If the user refers to "the PDF", "this document", "the file" etc. without naming one, assume they mean the newest document (#1 above) unless the conversation shows otherwise.
+- For broad questions (summarize, overview, what is it about, list all ...), use readDocument on the relevant file.
+- For specific questions, use searchKnowledgeBase. Pass "source" when the question is about one particular document. Use the document's own terminology in the query. If results don't answer the question, search again with different wording or read the document.
+- Base answers only on what the tools return. If the information isn't there, say it isn't mentioned in the uploaded documents.
+- Be concise and direct. Use markdown (bold, bullet lists) when it helps readability. When several documents are involved, say which document each fact comes from.`;
+}
 
 export type ChatTools = InferUITools<typeof tools>;
 export type ChatMessage = UIMessage<never, UIDataTypes, ChatTools>;
+
 export async function POST(req: Request) {
   try {
     const { messages }: { messages: ChatMessage[] } = await req.json();
+
+    const docs = await listDocuments();
 
     const result = streamText({
       model: google("gemini-3.5-flash-lite"),
       messages: await convertToModelMessages(messages),
       tools,
-      system: `You are a helpful assistant that answers questions about documents (PDFs) an admin has uploaded to a shared knowledge base.
-Rules:
-- Always call searchKnowledgeBase before answering any question that could relate to the documents, including questions about "the PDF", "the document", "the resume", or a person mentioned in them.
-- Use specific search queries (e.g. "technical skills", "education CGPA", "projects"). If the first search doesn't answer the question, search again with different wording.
-- Base your answer only on the search results. Each result is labelled with its source file; prefer results from the document the user is asking about.
-- If the results don't contain the answer, say it isn't mentioned in the uploaded documents. Don't ask the user who they mean; search first.
-- Give concise answers that directly answer the question.`,
-      // Allow a few search rounds and still leave a step to write the answer.
-      stopWhen: stepCountIs(5),
+      system: buildSystemPrompt(docs),
+      // Allow several tool rounds and still leave a step to write the answer.
+      stopWhen: stepCountIs(6),
     });
 
     return result.toUIMessageStreamResponse({
@@ -78,10 +125,14 @@ Rules:
 
     return new Response(
       JSON.stringify({
-        error: "Failed to generate response",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate response",
       }),
       {
         status: 500,
+        headers: { "Content-Type": "application/json" },
       },
     );
   }

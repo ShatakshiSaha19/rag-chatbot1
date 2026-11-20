@@ -14,13 +14,39 @@ function getModel() {
   return model;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Retry rate-limit (429) and temporary server errors (5xx) with exponential
+ * backoff, so a large PDF doesn't fail just because the free tier is busy.
+ */
+async function withRetry<T>(fn: () => Promise<T>, attempts = 6): Promise<T> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const status = (error as { status?: number }).status;
+      const retryable =
+        status === 429 || (status !== undefined && status >= 500);
+      if (!retryable || attempt >= attempts) throw error;
+      const delay = 2000 * 2 ** (attempt - 1); // 2s, 4s, 8s, 16s, 32s
+      console.warn(
+        `Gemini embedding error ${status}, retrying in ${delay / 1000}s (attempt ${attempt}/${attempts - 1})`,
+      );
+      await sleep(delay);
+    }
+  }
+}
+
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const result = await getModel().embedContent({
-    content: {
-      role: "user",
-      parts: [{ text }],
-    },
-  });
+  const result = await withRetry(() =>
+    getModel().embedContent({
+      content: {
+        role: "user",
+        parts: [{ text }],
+      },
+    }),
+  );
 
   return result.embedding.values;
 }
@@ -33,11 +59,13 @@ export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
 
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {
     const batch = texts.slice(i, i + BATCH_SIZE);
-    const result = await getModel().batchEmbedContents({
-      requests: batch.map((text) => ({
-        content: { role: "user", parts: [{ text }] },
-      })),
-    });
+    const result = await withRetry(() =>
+      getModel().batchEmbedContents({
+        requests: batch.map((text) => ({
+          content: { role: "user", parts: [{ text }] },
+        })),
+      }),
+    );
     embeddings.push(...result.embeddings.map((e) => e.values));
   }
 
