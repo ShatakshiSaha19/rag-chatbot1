@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     const { messages }: { messages: ChatMessage[] } = await req.json();
 
     const result = streamText({
-      model: google("gemini-3.1-flash-lite"),
+      model: google("gemini-3.5-flash-lite"),
       messages: await convertToModelMessages(messages),
       tools,
       system: `You are a helpful assistant that answers questions about documents (PDFs) an admin has uploaded to a shared knowledge base.
