@@ -1,10 +1,10 @@
 // src/app/chat/page.tsx
 
-//working 
+//working
 "use client";
 
-import { Fragment, useState } from "react";
 import { useChat } from "@ai-sdk/react";
+import { Fragment, useState } from "react";
 
 import {
   Conversation,
@@ -12,10 +12,7 @@ import {
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 
-import {
-  Message,
-  MessageContent,
-} from "@/components/ai-elements/message";
+import { Message, MessageContent } from "@/components/ai-elements/message";
 
 import {
   PromptInput,
@@ -70,10 +67,9 @@ export default function RAGChatBot() {
               </div>
             ))}
 
-            {(status === "submitted" ||
-              status === "streaming") && (
-                <div>Loading...</div>
-              )}
+            {(status === "submitted" || status === "streaming") && (
+              <div>Loading...</div>
+            )}
           </ConversationContent>
 
           <ConversationScrollButton />
@@ -94,10 +90,7 @@ export default function RAGChatBot() {
           <PromptInputTools>
             {/* Model selector, tools, etc */}
 
-            <PromptInputSubmit
-              disabled={!input && !status}
-              status={status}
-            />
+            <PromptInputSubmit disabled={!input && !status} status={status} />
           </PromptInputTools>
         </PromptInput>
       </div>

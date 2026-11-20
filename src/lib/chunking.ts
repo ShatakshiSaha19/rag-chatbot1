@@ -4,7 +4,7 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 export const textSplitter = new RecursiveCharacterTextSplitter({
   chunkSize: 150,
   chunkOverlap: 20,
-  separators: [" "],  
+  separators: [" "],
   // prevents words from being cut in half
 });
 

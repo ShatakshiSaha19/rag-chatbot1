@@ -2,12 +2,18 @@
 "use server";
 
 import pdf from "pdf-parse";
-import { db } from "@/lib/db-config";
+import { isAdmin } from "@/lib/auth";
+import { chunkContent } from "@/lib/chunking";
+import { getDb } from "@/lib/db-config";
 import { documents } from "@/lib/db-schema";
 import { generateEmbeddings } from "@/lib/embeddings";
-import { chunkContent } from "@/lib/chunking";
 
 export async function processPdfFile(formData: FormData) {
+  // Server actions are callable directly, so check the role here too.
+  if (!(await isAdmin())) {
+    return { success: false, error: "Only admins can upload PDFs" };
+  }
+
   try {
     const file = formData.get("pdf") as File;
 
@@ -35,7 +41,14 @@ export async function processPdfFile(formData: FormData) {
       embedding: embeddings[index],
     }));
 
-    await db.insert(documents).values(records);
+    // Insert in batches: each row carries a 3072-dim vector, so one huge
+    // INSERT for a large PDF can exceed the database request size limit.
+    const INSERT_BATCH_SIZE = 100;
+    for (let i = 0; i < records.length; i += INSERT_BATCH_SIZE) {
+      await getDb()
+        .insert(documents)
+        .values(records.slice(i, i + INSERT_BATCH_SIZE));
+    }
 
     return {
       success: true,

@@ -1,13 +1,15 @@
 // src/app/upload/page.tsx
 "use client";
 
+import { Loader2, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
-import { processPdfFile } from "./actions";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { processPdfFile } from "./actions";
 
 export default function PDFUpload() {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +44,7 @@ export default function PDFUpload() {
         });
       }
     } catch (err) {
+      console.error("Upload failed:", err);
       setMessage({
         type: "error",
         text: "An error occurred while processing the PDF",
@@ -90,6 +93,15 @@ export default function PDFUpload() {
                   </AlertTitle>
                   <AlertDescription>{message.text}</AlertDescription>
                 </Alert>
+              )}
+
+              {message?.type === "success" && (
+                <Link href="/chat">
+                  <Button>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Go to chat
+                  </Button>
+                </Link>
               )}
             </div>
           </CardContent>
