@@ -1,6 +1,7 @@
 // src/app/upload/actions.ts
 "use server";
 
+import { eq } from "drizzle-orm";
 import pdf from "pdf-parse";
 import { isAdmin } from "@/lib/auth";
 import { chunkContent } from "@/lib/chunking";
@@ -35,10 +36,15 @@ export async function processPdfFile(formData: FormData) {
     // Generate embeddings
     const embeddings = await generateEmbeddings(chunks);
 
+    // Re-uploading a file with the same name replaces its old chunks
+    // instead of storing duplicates.
+    await getDb().delete(documents).where(eq(documents.source, file.name));
+
     // Store in database
     const records = chunks.map((chunk, index) => ({
       content: chunk,
       embedding: embeddings[index],
+      source: file.name,
     }));
 
     // Insert in batches: each row carries a 3072-dim vector, so one huge

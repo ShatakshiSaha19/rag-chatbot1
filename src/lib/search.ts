@@ -5,34 +5,41 @@ import { documents } from "./db-schema";
 import { generateEmbedding } from "./embeddings";
 
 /**
- * Search for similar documents using Drizzle ORM with cosineDistance
+ * Find the chunks most similar to `query`, skipping duplicate text
+ * (the same PDF may have been uploaded more than once).
  */
 export async function searchDocuments(
   query: string,
-  limit: number = 5,
-  threshold: number = 0.5,
+  limit: number = 6,
+  threshold: number = 0.4,
 ) {
-  // Generate embedding for the search query
   const embedding = await generateEmbedding(query);
 
-  // Calculate similarity using Drizzle's cosineDistance function
-  // This creates a SQL expression for similarity calculation
   const similarity = sql<number>`1 - (${cosineDistance(
     documents.embedding,
     embedding,
   )})`;
 
-  // Use Drizzle's query builder for the search
-  const similarDocuments = await getDb()
+  // Fetch extra rows so we still have `limit` results after removing duplicates.
+  const rows = await getDb()
     .select({
       id: documents.id,
       content: documents.content,
+      source: documents.source,
       similarity,
     })
     .from(documents)
     .where(gt(similarity, threshold))
     .orderBy(desc(similarity))
-    .limit(limit);
+    .limit(limit * 3);
 
-  return similarDocuments;
+  const seen = new Set<string>();
+  const unique = rows.filter((row) => {
+    const key = row.content.trim();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return unique.slice(0, limit);
 }

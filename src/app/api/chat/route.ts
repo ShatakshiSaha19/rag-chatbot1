@@ -13,22 +13,26 @@ import { searchDocuments } from "@/lib/search";
 
 const tools = {
   searchKnowledgeBase: tool({
-    description: "Search the knowledge base for relevant information",
+    description:
+      "Search the uploaded documents (PDFs) for information relevant to the user's question",
     inputSchema: z.object({
       query: z.string().describe("The search query to find relevant documents"),
     }),
     execute: async ({ query }) => {
       try {
         // Search the vector database
-        const results = await searchDocuments(query, 3, 0.5);
+        const results = await searchDocuments(query, 6, 0.4);
 
         if (results.length === 0) {
           return "No relevant information found in the knowledge base.";
         }
 
-        // Format results for the AI
+        // Format results for the AI, labelling which PDF each excerpt came from
         const formattedResults = results
-          .map((r, i) => `[${i + 1}] ${r.content}`)
+          .map(
+            (r, i) =>
+              `[${i + 1}] (source: ${r.source ?? "unknown"})\n${r.content}`,
+          )
           .join("\n\n");
 
         return formattedResults;
@@ -50,11 +54,15 @@ export async function POST(req: Request) {
       model: google("gemini-3.1-flash-lite"),
       messages: await convertToModelMessages(messages),
       tools,
-      system: `You are a helpful assistant with access to a knowledge base. 
-          When users ask questions, search the knowledge base for relevant information.
-          Always search before answering if the question might relate to uploaded documents.
-          Base your answers on the search results when available. Give concise answers that correctly answer what the user is asking for. Do not flood them with all the information from the search results.`,
-      stopWhen: stepCountIs(2),
+      system: `You are a helpful assistant that answers questions about documents (PDFs) an admin has uploaded to a shared knowledge base.
+Rules:
+- Always call searchKnowledgeBase before answering any question that could relate to the documents, including questions about "the PDF", "the document", "the resume", or a person mentioned in them.
+- Use specific search queries (e.g. "technical skills", "education CGPA", "projects"). If the first search doesn't answer the question, search again with different wording.
+- Base your answer only on the search results. Each result is labelled with its source file; prefer results from the document the user is asking about.
+- If the results don't contain the answer, say it isn't mentioned in the uploaded documents. Don't ask the user who they mean; search first.
+- Give concise answers that directly answer the question.`,
+      // Allow a few search rounds and still leave a step to write the answer.
+      stopWhen: stepCountIs(5),
     });
 
     return result.toUIMessageStreamResponse();
