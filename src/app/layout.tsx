@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RAG Bot",
-  description: "AI powered RAG chatbot",
+  title: "DocuMind",
+  description: "Chat with your PDF documents using AI",
 };
 
 export default function RootLayout({
