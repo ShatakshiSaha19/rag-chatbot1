@@ -65,7 +65,14 @@ Rules:
       stopWhen: stepCountIs(5),
     });
 
-    return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse({
+      // By default the AI SDK hides errors from the client ("An error occurred").
+      // Log the full error to the server logs and send a readable message.
+      onError: (error) => {
+        console.error("CHAT STREAM ERROR:", error);
+        return error instanceof Error ? error.message : String(error);
+      },
+    });
   } catch (error) {
     console.error("CHAT API ERROR:", error);
 

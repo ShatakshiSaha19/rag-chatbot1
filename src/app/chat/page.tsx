@@ -32,7 +32,7 @@ import {
 export default function RAGChatBot() {
   const [input, setInput] = useState("");
 
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status, error, regenerate } = useChat();
 
   const handleSubmit = (message: PromptInputMessage) => {
     if (!message.text) {
@@ -90,6 +90,25 @@ export default function RAGChatBot() {
             {(status === "submitted" || status === "streaming") && (
               <div>Loading...</div>
             )}
+
+            {status === "error" && (
+              <div className="flex items-start gap-3 rounded-2xl border border-red-400/30 bg-red-400/10 p-4 text-sm">
+                <div className="flex-1">
+                  <p className="font-medium">Couldn't get a response</p>
+                  <p className="mt-1 wrap-break-word text-muted-foreground">
+                    {error?.message ||
+                      "Something went wrong. Please try again."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => regenerate()}
+                  className="shrink-0 rounded-lg border border-border px-3 py-1.5 font-medium hover:bg-white/5"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
           </ConversationContent>
 
           <ConversationScrollButton />
@@ -104,7 +123,7 @@ export default function RAGChatBot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything about the uploaded documents…"
-              className="min-h-[72px] text-base px-5 py-4"
+              className="min-h-18 text-base px-5 py-4"
             />
           </PromptInputBody>
 
