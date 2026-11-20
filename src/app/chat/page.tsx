@@ -5,6 +5,8 @@
 
 import { useChat } from "@ai-sdk/react";
 import { Fragment, useState } from "react";
+import "katex/dist/katex.min.css";
+import "streamdown/styles.css";
 
 import {
   Conversation,
@@ -12,7 +14,11 @@ import {
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 
-import { Message, MessageContent } from "@/components/ai-elements/message";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
 
 import {
   PromptInput,
@@ -54,7 +60,21 @@ export default function RAGChatBot() {
                         <Fragment key={`${message.id}-${i}`}>
                           <Message from={message.role}>
                             <MessageContent>
-                              <div>{part.text}</div>
+                              {message.role === "assistant" ? (
+                                // Render the bot's markdown (bold, bullet lists, etc.)
+                                <MessageResponse
+                                  isAnimating={
+                                    status === "streaming" &&
+                                    message.id === messages.at(-1)?.id
+                                  }
+                                >
+                                  {part.text}
+                                </MessageResponse>
+                              ) : (
+                                <div className="whitespace-pre-wrap">
+                                  {part.text}
+                                </div>
+                              )}
                             </MessageContent>
                           </Message>
                         </Fragment>
