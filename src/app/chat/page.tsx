@@ -41,7 +41,7 @@ export default function RAGChatBot() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 relative size-full h-[calc(100vh-4rem)]">
+    <div className="max-w-7xl mx-auto px-4 py-6 md:px-8 relative size-full h-[calc(100vh-4rem)]">
       <div className="flex flex-col h-full">
         <Conversation className="h-full">
           <ConversationContent>
@@ -83,7 +83,8 @@ export default function RAGChatBot() {
             <PromptInputTextarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="min-h-[60px] text-base px-4 py-3"
+              placeholder="Ask anything about the uploaded documents…"
+              className="min-h-[72px] text-base px-5 py-4"
             />
           </PromptInputBody>
 
