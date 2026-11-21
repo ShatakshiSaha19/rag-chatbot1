@@ -284,4 +284,4 @@ No code changes are needed to add documents: anything uploaded through `/upload`
 
 ## 📜 License
 
-No license has been specified for this project yet.
+This project is licensed under the [MIT License](LICENSE).
