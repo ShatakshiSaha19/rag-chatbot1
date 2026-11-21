@@ -4,6 +4,8 @@
 
 Built with **Next.js 16**, **Vercel AI SDK 6**, **Google Gemini**, **Neon Postgres + pgvector**, **Drizzle ORM** and **Clerk**.
 
+🔗 **Live demo:** [documind-sigma-pearl.vercel.app](https://documind-sigma-pearl.vercel.app/)
+
 ---
 
 ## ✨ Features
