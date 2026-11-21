@@ -6,6 +6,7 @@ import {
   SignUpButton,
   useUser,
 } from "@clerk/nextjs";
+import { BookOpenText } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,18 @@ export const Navigation = () => {
   const { isSignedIn } = useUser();
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/10 dark:bg-black/20 border-b border-white/10">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between gap-2 px-4 sm:px-6">
         <Link
           href="/"
-          className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent"
+          className="flex items-center gap-2 font-heading text-xl font-semibold tracking-tight sm:text-2xl"
         >
-          DocuMind
+          <span className="hidden h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground min-[400px]:grid">
+            <BookOpenText className="h-4.5 w-4.5" />
+          </span>
+          <span>
+            Docu<span className="italic text-primary">Mind</span>
+          </span>
         </Link>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
@@ -42,12 +48,14 @@ export const Navigation = () => {
                 forceRedirectUrl="/after-sign-in"
                 signInForceRedirectUrl="/after-sign-in"
               >
-                <Button>Sign Up</Button>
+                <Button className="rounded-full">Sign Up</Button>
               </SignUpButton>
             </>
           ) : (
             <SignOutButton>
-              <Button variant="outline">Sign Out</Button>
+              <Button variant="outline" className="rounded-full">
+                Sign Out
+              </Button>
             </SignOutButton>
           )}
         </div>

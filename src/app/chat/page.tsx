@@ -85,11 +85,11 @@ export default function RAGChatBot() {
         <ConversationContent className="gap-6 px-1 sm:px-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center px-4 py-16 text-center sm:py-24">
-              <div className="mb-4 rounded-full bg-gradient-to-br from-cyan-400/20 to-purple-500/20 p-4">
-                <MessageSquare className="h-7 w-7 text-cyan-400" />
+              <div className="mb-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+                <MessageSquare className="h-7 w-7 text-primary" />
               </div>
-              <h2 className="mb-2 text-xl font-semibold sm:text-2xl">
-                Ask about your documents
+              <h2 className="mb-2 font-heading text-2xl font-semibold sm:text-3xl">
+                Ask about your <span className="marker italic">documents</span>
               </h2>
               <p className="max-w-md text-sm text-muted-foreground sm:text-base">
                 {selectedSource
@@ -138,7 +138,7 @@ export default function RAGChatBot() {
           )}
 
           {status === "error" && (
-            <div className="flex flex-col gap-3 rounded-2xl border border-red-400/30 bg-red-400/10 p-4 text-sm sm:flex-row sm:items-start">
+            <div className="flex flex-col gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm sm:flex-row sm:items-start">
               <div className="flex-1">
                 <p className="font-medium">Couldn't get a response</p>
                 <p className="mt-1 wrap-break-word text-muted-foreground">
@@ -148,7 +148,7 @@ export default function RAGChatBot() {
               <button
                 type="button"
                 onClick={() => regenerate({ body: requestBody })}
-                className="self-start rounded-lg border border-border px-3 py-1.5 font-medium hover:bg-white/5"
+                className="self-start rounded-lg border border-border px-3 py-1.5 font-medium hover:bg-accent"
               >
                 Retry
               </button>
@@ -161,7 +161,7 @@ export default function RAGChatBot() {
 
       <PromptInput
         onSubmit={handleSubmit}
-        className="mt-2 w-full rounded-2xl border border-border/50 bg-background/80 backdrop-blur sm:mt-4"
+        className="mt-2 w-full rounded-2xl bg-card shadow-[0_8px_30px_-12px_rgb(0_0_0/0.18)] sm:mt-4"
       >
         <PromptInputBody>
           <PromptInputTextarea
@@ -174,7 +174,7 @@ export default function RAGChatBot() {
 
         <PromptInputFooter className="px-2 pb-2">
           <PromptInputTools className="min-w-0 flex-1">
-            <label className="flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted-foreground hover:bg-white/5 sm:text-sm">
+            <label className="flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted-foreground hover:bg-accent sm:text-sm">
               <FileText className="h-4 w-4 shrink-0" />
               <span className="sr-only">Document to chat with</span>
               <select

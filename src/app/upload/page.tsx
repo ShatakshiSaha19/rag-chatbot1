@@ -102,16 +102,13 @@ export default function PDFUpload() {
   };
 
   return (
-    <main className="relative min-h-[calc(100dvh-4rem)] overflow-hidden bg-background px-4 py-10 text-foreground sm:py-16">
+    <main className="relative isolate min-h-[calc(100dvh-4rem)] overflow-hidden bg-background px-4 py-10 text-foreground sm:py-16">
       <HeroBackground />
 
       <div className="mx-auto max-w-2xl">
         <div className="mb-10 text-center">
-          <h1 className="mb-3 text-3xl font-black sm:text-4xl md:text-5xl">
-            Upload{" "}
-            <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-              Documents
-            </span>
+          <h1 className="mb-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+            Upload <span className="marker italic">Documents</span>
           </h1>
           <p className="text-muted-foreground">
             Add PDFs to the knowledge base. Everyone can then ask the chatbot
@@ -119,7 +116,7 @@ export default function PDFUpload() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/10 p-4 shadow-xl backdrop-blur-xl sm:p-6 md:p-8 dark:bg-white/5">
+        <div className="rounded-3xl border border-border bg-card p-4 shadow-[0_1px_0_var(--border),0_16px_40px_-20px_rgb(0_0_0/0.25)] sm:p-6 md:p-8">
           {/* Drop zone */}
           {!file && (
             <label
@@ -133,16 +130,16 @@ export default function PDFUpload() {
               className={cn(
                 "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-4 py-10 text-center sm:px-6 sm:py-14 transition-colors",
                 isDragging
-                  ? "border-cyan-400 bg-cyan-400/10"
-                  : "border-border hover:border-purple-400/70 hover:bg-white/5",
+                  ? "border-primary bg-primary/5"
+                  : "border-input hover:border-primary/60 hover:bg-accent/50",
               )}
             >
-              <div className="mb-4 rounded-full bg-gradient-to-br from-cyan-400/20 to-purple-500/20 p-4">
-                <CloudUpload className="h-8 w-8 text-cyan-400" />
+              <div className="mb-4 rounded-2xl bg-secondary p-4">
+                <CloudUpload className="h-8 w-8 text-primary" />
               </div>
               <p className="text-lg font-semibold">
                 Drag & drop a PDF here, or{" "}
-                <span className="text-cyan-400 underline-offset-4 hover:underline">
+                <span className="text-primary underline decoration-highlight decoration-4 underline-offset-4">
                   browse
                 </span>
               </p>
@@ -165,8 +162,8 @@ export default function PDFUpload() {
           {file && (
             <div className="space-y-5">
               <div className="flex items-center gap-4 rounded-2xl border border-border bg-background/40 p-4">
-                <div className="rounded-xl bg-purple-500/15 p-3">
-                  <FileText className="h-6 w-6 text-purple-400" />
+                <div className="rounded-xl bg-tomato/10 p-3">
+                  <FileText className="h-6 w-6 text-tomato" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{file.name}</p>
@@ -198,8 +195,8 @@ export default function PDFUpload() {
               )}
 
               {isUploading && (
-                <div className="flex items-start gap-3 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 p-4">
-                  <LoaderCircle className="mt-0.5 h-5 w-5 shrink-0 animate-spin text-cyan-400" />
+                <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                  <LoaderCircle className="mt-0.5 h-5 w-5 shrink-0 animate-spin text-primary" />
                   <div>
                     <p className="font-medium">Processing your PDF…</p>
                     <p className="text-sm text-muted-foreground">
@@ -215,8 +212,8 @@ export default function PDFUpload() {
           {/* Result messages */}
           {status.type === "success" && (
             <div className="mt-5 space-y-4">
-              <div className="flex items-start gap-3 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-4">
-                <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+              <div className="flex items-start gap-3 rounded-2xl border border-success/30 bg-success/10 p-4">
+                <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-success" />
                 <div>
                   <p className="font-medium">Upload complete</p>
                   <p className="text-sm text-muted-foreground">{status.text}</p>
@@ -249,8 +246,8 @@ export default function PDFUpload() {
           )}
 
           {status.type === "error" && (
-            <div className="mt-5 flex items-start gap-3 rounded-2xl border border-red-400/30 bg-red-400/10 p-4">
-              <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+            <div className="mt-5 flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4">
+              <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
               <div className="flex-1">
                 <p className="font-medium">Something went wrong</p>
                 <p className="text-sm text-muted-foreground">{status.text}</p>

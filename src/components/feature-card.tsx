@@ -4,18 +4,29 @@ export function FeatureCard({
   title,
   description,
   icon,
+  index,
 }: {
   title: string;
   description: string;
   icon: ReactNode;
+  index?: number;
 }) {
   return (
-    <div className="backdrop-blur-xl bg-white/10 dark:bg-white/5 border border-white/10 rounded-3xl p-5 sm:p-6 shadow-xl hover:scale-105 transition-all duration-300">
-      <div className="mb-4">{icon}</div>
+    <div className="group relative rounded-2xl border border-border bg-card p-5 text-left shadow-[0_1px_0_var(--border),0_8px_24px_-12px_rgb(0_0_0/0.15)] transition-transform duration-200 hover:-translate-y-1 sm:p-6">
+      <div className="mb-5 flex items-center justify-between">
+        <div className="rounded-xl bg-secondary p-2.5">{icon}</div>
+        {index !== undefined && (
+          <span className="font-heading text-sm text-muted-foreground">
+            {String(index).padStart(2, "0")}
+          </span>
+        )}
+      </div>
 
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <h3 className="mb-2 font-heading text-xl font-semibold">{title}</h3>
 
-      <p className="text-muted-foreground">{description}</p>
+      <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+        {description}
+      </p>
     </div>
   );
 }

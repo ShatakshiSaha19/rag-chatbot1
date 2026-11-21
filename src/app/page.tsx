@@ -18,19 +18,19 @@ export default function HomePage() {
   const { isSignedIn } = useUser();
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
+    <main className="relative isolate min-h-screen overflow-hidden bg-background text-foreground">
       <HeroBackground />
 
       <section className="container mx-auto px-4 pt-16 pb-16 text-center sm:px-6 sm:pt-24 md:pt-32 md:pb-20">
         <motion.h1
-          className="mb-6 text-4xl font-black leading-tight sm:text-6xl md:mb-8 md:text-7xl"
+          className="mb-6 font-heading text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:mb-8 md:text-7xl"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
           AI Powered
-          <span className="block bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            RAG Chatbot
+          <span className="mt-1 block italic">
+            <span className="marker">RAG Chatbot</span>
           </span>
         </motion.h1>
 
@@ -54,7 +54,7 @@ export default function HomePage() {
             <Link href="/chat">
               <Button
                 size="lg"
-                className="rounded-2xl px-6 py-5 text-base shadow-lg transition-all hover:scale-105 sm:px-8 sm:py-6 sm:text-lg"
+                className="rounded-full px-6 py-5 text-base shadow-sm transition-transform hover:-translate-y-0.5 sm:px-8 sm:py-6 sm:text-lg"
               >
                 <MessageSquare className="mr-2 h-5 w-5" />
                 Start Chat
@@ -66,7 +66,7 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   variant="secondary"
-                  className="rounded-2xl px-6 py-5 text-base shadow-lg transition-all hover:scale-105 sm:px-8 sm:py-6 sm:text-lg"
+                  className="rounded-full border border-border px-6 py-5 text-base shadow-sm transition-transform hover:-translate-y-0.5 sm:px-8 sm:py-6 sm:text-lg"
                 >
                   <Upload className="mr-2 h-5 w-5" />
                   Upload PDFs
@@ -80,7 +80,7 @@ export default function HomePage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.7 }}
           >
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg italic">
               Sign in to start using the platform.
             </p>
           </motion.div>
@@ -90,19 +90,22 @@ export default function HomePage() {
           <FeatureCard
             title="Smart Chat"
             description="Talk with your PDFs using AI powered semantic search and contextual retrieval."
-            icon={<MessageSquare className="h-10 w-10 text-cyan-400" />}
+            index={1}
+            icon={<MessageSquare className="h-6 w-6 text-primary" />}
           />
 
           <FeatureCard
             title="Secure Uploads"
             description="Role-based access ensures secure document uploading and management."
-            icon={<Shield className="h-10 w-10 text-purple-400" />}
+            index={2}
+            icon={<Shield className="h-6 w-6 text-tomato" />}
           />
 
           <FeatureCard
             title="Fast Embeddings"
             description="Gemini embeddings with blazing fast vector similarity search."
-            icon={<Upload className="h-10 w-10 text-pink-400" />}
+            index={3}
+            icon={<Upload className="h-6 w-6 text-chart-3" />}
           />
         </div>
       </section>
