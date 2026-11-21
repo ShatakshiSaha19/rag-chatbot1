@@ -35,8 +35,27 @@ export default function RAGChatBot() {
   // "" = all documents; otherwise the exact file name to chat with.
   const [selectedSource, setSelectedSource] = useState("");
 
-  const { messages, sendMessage, status, error, regenerate, stop } = useChat();
+  const {
+    messages,
+    setMessages,
+    sendMessage,
+    status,
+    error,
+    regenerate,
+    stop,
+    clearError,
+  } = useChat();
   const isBusy = status === "submitted" || status === "streaming";
+
+  // Switching documents starts a fresh conversation, so answers about the
+  // previous document (still in the chat history) can't carry over.
+  const changeDocument = (source: string) => {
+    setSelectedSource(source);
+    if (messages.length > 0) {
+      setMessages([]);
+      clearError();
+    }
+  };
 
   // Load the document list; preselect ?doc=<file> (set after an upload).
   useEffect(() => {
@@ -160,7 +179,7 @@ export default function RAGChatBot() {
               <span className="sr-only">Document to chat with</span>
               <select
                 value={selectedSource}
-                onChange={(e) => setSelectedSource(e.target.value)}
+                onChange={(e) => changeDocument(e.target.value)}
                 disabled={isBusy}
                 className="min-w-0 max-w-[55vw] truncate bg-transparent text-foreground outline-none sm:max-w-xs"
               >

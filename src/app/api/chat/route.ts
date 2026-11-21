@@ -95,7 +95,8 @@ function buildSystemPrompt(
 
   const scope = selectedSource
     ? `The user has selected ONE document to chat with: "${selectedSource}".
-Answer only from this document. "The PDF", "this document", "it" etc. all mean this document. If the answer isn't in it, say it isn't mentioned in "${selectedSource}". Don't use other documents.`
+Answer only from this document. "The PDF", "this document", "it" etc. all mean this document. If the answer isn't in it, say it isn't mentioned in "${selectedSource}". Don't use other documents.
+Earlier messages in this conversation may contain facts from OTHER documents. Never reuse facts from earlier messages: for every question, search "${selectedSource}" again and answer only from what that search returns.`
     : `The user is chatting with ALL uploaded documents (newest first):
 ${docList}
 If the user says "the PDF", "this document" etc. without naming one, assume the newest document (#1). When a question could match several documents, prefer the one the question's wording fits best, and say which document each fact comes from.`;
