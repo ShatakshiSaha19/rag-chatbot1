@@ -102,12 +102,12 @@ export default function PDFUpload() {
   };
 
   return (
-    <main className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-background px-4 py-16 text-foreground">
+    <main className="relative min-h-[calc(100dvh-4rem)] overflow-hidden bg-background px-4 py-10 text-foreground sm:py-16">
       <HeroBackground />
 
       <div className="mx-auto max-w-2xl">
         <div className="mb-10 text-center">
-          <h1 className="mb-3 text-4xl font-black md:text-5xl">
+          <h1 className="mb-3 text-3xl font-black sm:text-4xl md:text-5xl">
             Upload{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
               Documents
@@ -119,7 +119,7 @@ export default function PDFUpload() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/10 p-6 shadow-xl backdrop-blur-xl md:p-8 dark:bg-white/5">
+        <div className="rounded-3xl border border-white/10 bg-white/10 p-4 shadow-xl backdrop-blur-xl sm:p-6 md:p-8 dark:bg-white/5">
           {/* Drop zone */}
           {!file && (
             <label
@@ -131,7 +131,7 @@ export default function PDFUpload() {
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-14 text-center transition-colors",
+                "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-4 py-10 text-center sm:px-6 sm:py-14 transition-colors",
                 isDragging
                   ? "border-cyan-400 bg-cyan-400/10"
                   : "border-border hover:border-purple-400/70 hover:bg-white/5",
@@ -224,9 +224,15 @@ export default function PDFUpload() {
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg" className="flex-1 rounded-xl">
-                  <Link href="/chat">
+                  <Link
+                    href={
+                      file
+                        ? `/chat?doc=${encodeURIComponent(file.name)}`
+                        : "/chat"
+                    }
+                  >
                     <MessageSquare className="mr-2 h-5 w-5" />
-                    Go to chat
+                    Chat with this PDF
                   </Link>
                 </Button>
                 <Button
