@@ -12,7 +12,7 @@ export function FeatureCard({
   index?: number;
 }) {
   return (
-    <div className="group relative rounded-2xl border border-border bg-card p-5 text-left shadow-[0_1px_0_var(--border),0_8px_24px_-12px_rgb(0_0_0/0.15)] transition-transform duration-200 hover:-translate-y-1 sm:p-6">
+    <div className="group relative h-full rounded-2xl border border-border bg-card p-5 text-left shadow-[0_1px_0_var(--border),0_8px_24px_-12px_rgb(0_0_0/0.15)] transition-all duration-300 hover:-translate-y-1 sm:p-6 dark:hover:border-primary/50 dark:hover:shadow-[0_0_36px_-10px_rgb(255_79_163/0.6)]">
       <div className="mb-5 flex items-center justify-between">
         <div className="rounded-xl bg-secondary p-2.5">{icon}</div>
         {index !== undefined && (

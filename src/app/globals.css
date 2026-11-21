@@ -98,48 +98,63 @@
   --sidebar-ring: #1f4d3f;
   /* custom tokens */
   --highlight: #ffdd63;
+  --highlight-2: #ffcf3f;
   --tomato: #d9553b;
   --success: #2f7d4f;
   --paper-dot: rgb(30 27 22 / 0.09);
+  /* home scene */
+  --sun-1: #ffe58a;
+  --sun-2: #ffbd5c;
+  --sun-3: #f28a5b;
+  --palm: #1f4d3f;
+  --horizon: #d9cdb7;
 }
 
 .dark {
-  --background: #14130f;
-  --foreground: #eee7d7;
-  --card: #1c1a15;
-  --card-foreground: #eee7d7;
-  --popover: #1f1d17;
-  --popover-foreground: #eee7d7;
-  --primary: #e9c46a;
-  --primary-foreground: #1a1712;
-  --secondary: #2a261e;
-  --secondary-foreground: #eee7d7;
-  --muted: #25221b;
-  --muted-foreground: #a39a88;
-  --accent: #2c2820;
-  --accent-foreground: #eee7d7;
-  --destructive: #f2825f;
-  --border: #302b22;
-  --input: #3a342a;
-  --ring: #e9c46a;
-  --chart-1: #e9c46a;
-  --chart-2: #f2825f;
-  --chart-3: #7bc4a8;
-  --chart-4: #8fb8de;
-  --chart-5: #c9a77c;
-  --sidebar: #1a1813;
-  --sidebar-foreground: #eee7d7;
-  --sidebar-primary: #e9c46a;
-  --sidebar-primary-foreground: #1a1712;
-  --sidebar-accent: #2c2820;
-  --sidebar-accent-foreground: #eee7d7;
-  --sidebar-border: #302b22;
-  --sidebar-ring: #e9c46a;
+  /* Night: neon sunset over a deep purple sky */
+  --background: #0e0a1c;
+  --foreground: #fbeaf4;
+  --card: #18112c;
+  --card-foreground: #fbeaf4;
+  --popover: #1c1433;
+  --popover-foreground: #fbeaf4;
+  --primary: #ff4fa3;
+  --primary-foreground: #1a0712;
+  --secondary: #231a3c;
+  --secondary-foreground: #fbeaf4;
+  --muted: #1f1735;
+  --muted-foreground: #b8a6d0;
+  --accent: #2a1f48;
+  --accent-foreground: #fbeaf4;
+  --destructive: #ff6b6b;
+  --border: #2e2450;
+  --input: #3a2e62;
+  --ring: #ff4fa3;
+  --chart-1: #ff4fa3;
+  --chart-2: #ff8a3d;
+  --chart-3: #2ee6d0;
+  --chart-4: #8f7bff;
+  --chart-5: #ffd36e;
+  --sidebar: #120d24;
+  --sidebar-foreground: #fbeaf4;
+  --sidebar-primary: #ff4fa3;
+  --sidebar-primary-foreground: #1a0712;
+  --sidebar-accent: #2a1f48;
+  --sidebar-accent-foreground: #fbeaf4;
+  --sidebar-border: #2e2450;
+  --sidebar-ring: #ff4fa3;
   /* custom tokens */
-  --highlight: rgb(233 196 106 / 0.42);
-  --tomato: #f2825f;
-  --success: #7bc4a8;
-  --paper-dot: rgb(238 231 215 / 0.07);
+  --highlight: #ff4fa3;
+  --highlight-2: #ff8a3d;
+  --tomato: #ff8a3d;
+  --success: #2ee6d0;
+  --paper-dot: rgb(251 234 244 / 0.06);
+  /* home scene */
+  --sun-1: #ffd36e;
+  --sun-2: #ff8a3d;
+  --sun-3: #ff4fa3;
+  --palm: #07040f;
+  --horizon: #ff4fa3;
 }
 
 @layer base {
@@ -163,12 +178,10 @@ body {
 
 /* Highlighter-pen stroke behind a word or phrase */
 .marker {
-  background-image: linear-gradient(
-    transparent 58%,
-    var(--highlight) 58%,
-    var(--highlight) 92%,
-    transparent 92%
-  );
+  background-image: linear-gradient(90deg, var(--highlight), var(--highlight-2));
+  background-repeat: no-repeat;
+  background-size: 100% 0.36em;
+  background-position: 0 88%;
   padding-inline: 0.12em;
   margin-inline: -0.12em;
   box-decoration-break: clone;
@@ -179,4 +192,88 @@ body {
 .paper-dots {
   background-image: radial-gradient(var(--paper-dot) 1px, transparent 1px);
   background-size: 22px 22px;
+}
+
+/* ---------- Home page animations ---------- */
+@keyframes marker-sweep {
+  from {
+    background-size: 0% 0.36em;
+  }
+  to {
+    background-size: 100% 0.36em;
+  }
+}
+@keyframes float-sheet {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-16px) rotate(calc(var(--r, 0deg) + 3deg));
+  }
+}
+@keyframes palm-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+@keyframes sun-rise {
+  from {
+    transform: translate(-50%, 22%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes horizon-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.sheet {
+  transform: rotate(var(--r, 0deg));
+}
+.sun {
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .marker-animate {
+    animation: marker-sweep 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.55s both;
+  }
+  .anim-sheet {
+    animation: float-sheet var(--d, 9s) ease-in-out infinite;
+  }
+  .anim-palm {
+    animation: palm-sway var(--d, 7s) ease-in-out infinite;
+  }
+  .anim-sun {
+    animation: sun-rise 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+  }
+  .anim-twinkle {
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+  }
+  .anim-horizon {
+    animation: horizon-pulse 4s ease-in-out infinite;
+  }
 }
